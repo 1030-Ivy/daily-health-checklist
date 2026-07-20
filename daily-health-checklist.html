@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日肠道调理打卡</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f0f7f0;
+    --card: #ffffff;
+    --primary: #2d8a4e;
+    --primary-light: #e8f5e9;
+    --primary-dark: #1b5e20;
+    --accent: #ff8f00;
+    --accent-light: #fff3e0;
+    --text: #1a2e1a;
+    --text-secondary: #5a6e5a;
+    --text-muted: #8a9e8a;
+    --border: #d5e8d5;
+    --shadow: 0 2px 12px rgba(45,138,78,0.08);
+    --shadow-lg: 0 8px 32px rgba(45,138,78,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --danger: #d32f2f;
+    --danger-light: #ffebee;
+    --purple: #7b1fa2;
+    --purple-light: #f3e5f5;
+    --blue: #1565c0;
+    --blue-light: #e3f2fd;
+    --orange: #e65100;
+    --orange-light: #fff3e0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #2d8a4e 0%, #1b5e20 60%, #0d3d12 100%);
+    color: white;
+    padding: 32px 24px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 30%;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+  }
+  .header-content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    opacity: 0.8;
+    font-weight: 300;
+  }
+  .date-display {
+    margin-top: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.95;
+  }
+  .phase-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    font-size: 12px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    max-width: 600px;
+    margin: -24px auto 0;
+    padding: 0 16px;
+    position: relative;
+    z-index: 2;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.2;
+  }
+  .stat-number.accent { color: var(--accent); }
+  .stat-number.purple { color: var(--purple); }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+  .stat-sub {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Progress Ring */
+  .progress-section {
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .progress-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .progress-ring-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+  .progress-ring {
+    transform: rotate(-90deg);
+    width: 80px;
+    height: 80px;
+  }
+  .progress-ring-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 6;
+  }
+  .progress-ring-fill {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+  .progress-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .progress-info h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .progress-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .progress-bar-bg {
+    margin-top: 10px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #4caf50);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  /* Section */
+  .section {
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .section-icon.green { background: var(--primary-light); }
+  .section-icon.orange { background: var(--orange-light); }
+  .section-icon.purple { background: var(--purple-light); }
+  .section-icon.blue { background: var(--blue-light); }
+  .section-icon.red { background: var(--danger-light); }
+  .section-icon.yellow { background: #fff8e1; }
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .section-time-range {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-left: 2px;
+  }
+  .section-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: auto;
+    background: var(--bg);
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+
+  /* Task Card */
+  .task-card {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+  }
+  .task-card.completed {
+    opacity: 0.65;
+  }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 16px;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f4f0;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-item:hover { background: rgba(45,138,78,0.02); }
+
+  /* Checkbox */
+  .checkbox-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .checkbox-wrapper input { position: absolute; opacity: 0; pointer-events: none; }
+  .checkbox-visual {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    cursor: pointer;
+  }
+  .checkbox-visual::after {
+    content: '\2713';
+    font-size: 14px;
+    color: white;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 700;
+  }
+  .checkbox-wrapper.checked .checkbox-visual {
+    background: var(--primary);
+    border-color: var(--primary);
+    animation: checkBounce 0.4s ease;
+  }
+  .checkbox-wrapper.checked .checkbox-visual::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @keyframes checkBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.2); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+
+  .task-content { flex: 1; min-width: 0; }
+  .task-name {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    transition: all 0.3s;
+  }
+  .task-card.completed .task-name {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+  .task-detail {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .task-tip {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+  .tip-green { background: var(--primary-light); color: var(--primary-dark); }
+  .tip-orange { background: var(--orange-light); color: var(--orange); }
+  .tip-red { background: var(--danger-light); color: var(--danger); }
+  .tip-blue { background: var(--blue-light); color: var(--blue); }
+  .tip-purple { background: var(--purple-light); color: var(--purple); }
+
+  /* Time Group Label */
+  .time-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 10px 16px 0;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .time-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Streak Calendar Mini */
+  .streak-section {
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .streak-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .streak-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .streak-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .streak-fire {
+    font-size: 24px;
+  }
+  .streak-days {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .streak-day {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--bg);
+    transition: all 0.3s;
+  }
+  .streak-day .day-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .streak-day.done {
+    background: var(--primary);
+    color: white;
+  }
+  .streak-day.done .day-num { color: white; }
+  .streak-day.today {
+    border: 2px solid var(--primary);
+    background: var(--primary-light);
+  }
+  .streak-day.today .day-num { color: var(--primary); }
+  .streak-day.future { opacity: 0.4; }
+
+  /* Tips Card */
+  .tips-section {
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .tips-card {
+    background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--accent);
+  }
+  .tips-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--orange);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tips-card ul {
+    padding-left: 16px;
+    font-size: 12px;
+    color: #5d4037;
+    line-height: 1.8;
+  }
+  .tips-card li { margin-bottom: 2px; }
+
+  /* Reset Button */
+  .reset-area {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 0 16px;
+    text-align: center;
+  }
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 24px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .reset-btn:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-size: 13px;
+    opacity: 0;
+    transition: all 0.4s;
+    z-index: 100;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Confetti */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 200;
+    overflow: hidden;
+  }
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 1.5s ease forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Motivational Quote */
+  .motivation {
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .motivation-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    border-top: 3px solid var(--primary);
+  }
+  .motivation-card .quote {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  /* Bowel Record Card */
+  .bowel-section {
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .bowel-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .bowel-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bowel-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .bowel-btn {
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .bowel-btn .btn-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .bowel-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .bowel-btn.yes.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  .bowel-btn.no.active {
+    border-color: var(--danger);
+    background: var(--danger-light);
+    color: var(--danger);
+  }
+  .bowel-note {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* Month Review Button */
+  .review-btn {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    margin: 16px auto 0;
+    padding: 0 16px;
+  }
+  .review-btn-inner {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    width: 100%;
+    transition: all 0.2s;
+  }
+  .review-btn-inner:hover {
+    background: var(--primary-light);
+  }
+  .review-btn-inner .arrow {
+    color: var(--text-muted);
+    font-size: 18px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-overlay.show {
+    display: flex;
+  }
+  .modal {
+    background: var(--card);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+  .modal-close:hover {
+    background: var(--bg);
+  }
+  .modal-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  /* Month Calendar */
+  .month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .month-nav-btn {
+    background: var(--bg);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .month-nav-btn:hover {
+    background: var(--border);
+  }
+  .month-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .month-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  .month-weekday {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 4px;
+  }
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .month-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    background: var(--bg);
+    color: var(--text-secondary);
+    position: relative;
+  }
+  .month-day.other-month {
+    opacity: 0.3;
+  }
+  .month-day.today {
+    border: 2px solid var(--primary);
+    font-weight: 700;
+  }
+  .month-day.bowel-yes {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+  }
+  .month-day.bowel-no {
+    background: var(--danger-light);
+    color: var(--danger);
+    font-weight: 600;
+  }
+  .month-day .day-label {
+    font-size: 10px;
+    position: absolute;
+    bottom: 2px;
+    opacity: 0.7;
+  }
+
+  /* Month Stats */
+  .month-stats {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .month-stat-item {
+    text-align: center;
+    padding: 10px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+  }
+  .month-stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .month-stat-num.no { color: var(--danger); }
+  .month-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Legend */
+  .month-legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .month-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .legend-dot.yes { background: var(--primary); }
+  .legend-dot.no { background: var(--danger); }
+  .legend-dot.none { background: var(--bg); border: 1px solid var(--border); }
+
+  /* Responsive */
+  @media (max-width: 400px) {
+    .header h1 { font-size: 20px; }
+    .stat-number { font-size: 24px; }
+    .task-item { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-content">
+    <h1>🌿 每日肠道调理打卡</h1>
+    <div class="subtitle">改善便秘全天调理规划 · 综合调理方案</div>
+    <div class="date-display" id="dateDisplay"></div>
+    <div class="phase-badge" id="phaseBadge"></div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number" id="streakCount">0</div>
+      <div class="stat-label">连续打卡</div>
+      <div class="stat-sub">天</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number accent" id="todayProgress">0%</div>
+      <div class="stat-label">今日完成</div>
+      <div class="stat-sub" id="todayDetail">0/0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number purple" id="totalDays">0</div>
+      <div class="stat-label">累计打卡</div>
+      <div class="stat-sub">天</div>
+    </div>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-card">
+    <div class="progress-ring-container">
+      <svg class="progress-ring" viewBox="0 0 80 80">
+        <circle class="progress-ring-bg" cx="40" cy="40" r="34" />
+        <circle class="progress-ring-fill" id="progressRing" cx="40" cy="40" r="34"
+          stroke-dasharray="213.6" stroke-dashoffset="213.6" />
+      </svg>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+    <div class="progress-info">
+      <h3>今日调理进度</h3>
+      <p>坚持每天完成核心任务，<br>循序渐进改善肠道健康。</p>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 1. 早晨·唤醒肠道 06:30-07:50 -->
+<div class="section" id="section-morning">
+  <div class="section-header">
+    <div class="section-icon green">🌅</div>
+    <div class="section-title">早晨·唤醒肠道</div>
+    <div class="section-time-range">06:30 - 07:50</div>
+    <div class="section-count" id="count-morning">0/4</div>
+  </div>
+  <div class="task-card" id="card-morning"></div>
+</div>
+
+<!-- 2. 上午·工间调理 10:00-10:15 -->
+<div class="section" id="section-midmorning">
+  <div class="section-header">
+    <div class="section-icon yellow">☕</div>
+    <div class="section-title">上午·工间调理</div>
+    <div class="section-time-range">10:00 - 10:15</div>
+    <div class="section-count" id="count-midmorning">0/2</div>
+  </div>
+  <div class="task-card" id="card-midmorning"></div>
+</div>
+
+<!-- 3. 中午·丰盛午餐 12:00-12:30 -->
+<div class="section" id="section-noon">
+  <div class="section-header">
+    <div class="section-icon orange">🍱</div>
+    <div class="section-title">中午·丰盛午餐</div>
+    <div class="section-time-range">12:00 - 12:30</div>
+    <div class="section-count" id="count-noon">0/1</div>
+  </div>
+  <div class="task-card" id="card-noon"></div>
+</div>
+
+<!-- 4. 下午·午后提神 15:00-15:15 -->
+<div class="section" id="section-afternoon">
+  <div class="section-header">
+    <div class="section-icon orange">🥜</div>
+    <div class="section-title">下午·午后提神</div>
+    <div class="section-time-range">15:00 - 15:15</div>
+    <div class="section-count" id="count-afternoon">0/2</div>
+  </div>
+  <div class="task-card" id="card-afternoon"></div>
+</div>
+
+<!-- 5. 傍晚·运动与晚餐 18:30-20:00 -->
+<div class="section" id="section-evening">
+  <div class="section-header">
+    <div class="section-icon blue">🏃</div>
+    <div class="section-title">傍晚·运动与晚餐</div>
+    <div class="section-time-range">18:30 - 20:00</div>
+    <div class="section-count" id="count-evening">0/3</div>
+  </div>
+  <div class="task-card" id="card-evening"></div>
+</div>
+
+<!-- 6. 夜间·放松入眠 20:30-22:00 -->
+<div class="section" id="section-night">
+  <div class="section-header">
+    <div class="section-icon red">🌙</div>
+    <div class="section-title">夜间·放松入眠</div>
+    <div class="section-time-range">20:30 - 22:00</div>
+    <div class="section-count" id="count-night">0/5</div>
+  </div>
+  <div class="task-card" id="card-night"></div>
+</div>
+
+<!-- 本周打卡日历 -->
+<div class="streak-section">
+  <div class="streak-card">
+    <div class="streak-header">
+      <h3>📅 本周打卡</h3>
+      <div class="streak-fire" id="streakFire"></div>
+    </div>
+    <div class="streak-days" id="streakDays"></div>
+  </div>
+</div>
+
+<!-- 今日排便记录 -->
+<div class="bowel-section">
+  <div class="bowel-card">
+    <h3>💩 今日排便记录</h3>
+    <div class="bowel-buttons">
+      <button class="bowel-btn yes" id="bowelYes" onclick="recordBowel(true)">
+        <span class="btn-icon">✅</span>
+        <span>已排便</span>
+      </button>
+      <button class="bowel-btn no" id="bowelNo" onclick="recordBowel(false)">
+        <span class="btn-icon">❌</span>
+        <span>未排便</span>
+      </button>
+    </div>
+    <div class="bowel-note" id="bowelNote">点击上方按钮记录今日排便情况</div>
+  </div>
+</div>
+
+<!-- 月度回顾入口 -->
+<div class="review-btn">
+  <button class="review-btn-inner" onclick="openMonthReview()">
+    <span>📊 月度排便回顾</span>
+    <span class="arrow">›</span>
+  </button>
+</div>
+
+<!-- 特别注意事项 -->
+<div class="tips-section">
+  <div class="tips-card">
+    <h3>⚠️ 特别注意事项</h3>
+    <ul>
+      <li>增加膳食纤维应<strong>从少量开始逐步增加</strong>，同时保证足量饮水和运动，否则纤维反而可能加重便秘</li>
+      <li><strong>慎用泻药</strong>：避免自行长期滥用刺激性泻药（番泻叶、芦荟、大黄等），如需用药请遵医嘱</li>
+      <li>调整 <strong>2-4 周</strong>后症状无改善，或出现便血、体重下降、贫血、腹部包块等，<strong>请及时就医</strong></li>
+      <li>蜂蜜水用<strong>陶瓷或玻璃杯</strong>冲泡；黄芪枸杞水在感冒发热期间不宜饮用；黑芝麻糊选无糖/低糖产品</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 每日一言 -->
+<div class="motivation">
+  <div class="motivation-card">
+    <div class="quote" id="dailyQuote"></div>
+  </div>
+</div>
+
+<div class="reset-area">
+  <button class="reset-btn" onclick="resetToday()">重置今日打卡</button>
+</div>
+
+<!-- 月度回顾弹窗 -->
+<div class="modal-overlay" id="monthModal" onclick="closeMonthReview(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>📊 月度排便回顾</h3>
+      <button class="modal-close" onclick="closeMonthReview()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="month-nav">
+        <button class="month-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="month-title" id="monthTitle"></div>
+        <button class="month-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="month-weekdays">
+        <div class="month-weekday">日</div>
+        <div class="month-weekday">一</div>
+        <div class="month-weekday">二</div>
+        <div class="month-weekday">三</div>
+        <div class="month-weekday">四</div>
+        <div class="month-weekday">五</div>
+        <div class="month-weekday">六</div>
+      </div>
+      <div class="month-grid" id="monthGrid"></div>
+      <div class="month-legend">
+        <div class="month-legend-item"><div class="legend-dot yes"></div>已排便</div>
+        <div class="month-legend-item"><div class="legend-dot no"></div>未排便</div>
+        <div class="month-legend-item"><div class="legend-dot none"></div>未记录</div>
+      </div>
+      <div class="month-stats">
+        <div class="month-stat-item">
+          <div class="month-stat-num" id="statYes">0</div>
+          <div class="month-stat-label">已排便天数</div>
+        </div>
+        <div class="month-stat-item">
+          <div class="month-stat-num no" id="statNo">0</div>
+          <div class="month-stat-label">未排便天数</div>
+        </div>
+        <div class="month-stat-item">
+          <div class="month-stat-num" id="statRate">0%</div>
+          <div class="month-stat-label">排便率</div>
+        </div>
+        <div class="month-stat-item">
+          <div class="month-stat-num" id="statTotal">0</div>
+          <div class="month-stat-label">记录天数</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+// ========== 任务数据（按时间顺序排列）==========
+const TASKS = {
+  // ── 1. 早晨 06:30-07:50 ──
+  morning: [
+    {
+      id: 'm1',
+      name: '饮温蜂蜜水 200ml',
+      detail: '起床后立即饮用。1汤匙蜂蜜（约20g）+ 不超过50℃温水冲泡，15分钟内分次喝完。',
+      time: '06:30',
+      tip: '润滑肠道 · 刺激胃结肠反射',
+      tipClass: 'tip-green'
+    },
+    {
+      id: 'm2',
+      name: '腹部顺时针按摩 5-10分钟',
+      detail: '空腹平躺放松，以肚脐为中心，掌心顺时针按摩，力度适中使腹部下陷约1cm。',
+      time: '06:30',
+      tip: '直接刺激肠道 · 增加肠蠕动',
+      tipClass: 'tip-green'
+    },
+    {
+      id: 'm3',
+      name: '定时排便训练 5-10分钟',
+      detail: '采用蹲位或坐姿+脚凳（膝盖高于臀部），上身微前倾，不看手机不看书。即使无便意也坚持尝试。',
+      time: '07:00 - 07:20',
+      tip: '最核心习惯 · 建立条件反射',
+      tipClass: 'tip-green'
+    },
+    {
+      id: 'm4',
+      name: '营养早餐',
+      detail: '主食选燕麦粥/全麦面包/蒸红薯/玉米；搭配凉拌芹菜/菠菜/猕猴桃/火龙果；饮品选无糖酸奶或温豆浆。避免精制米面、油炸、辛辣食物。',
+      time: '07:20 - 07:50',
+      tip: '高纤维 + 益生菌',
+      tipClass: 'tip-orange'
+    }
+  ],
+
+  // ── 2. 上午工间 10:00-10:15 ──
+  midmorning: [
+    {
+      id: 'mm1',
+      name: '饮黄芪枸杞泡水',
+      detail: '黄芪3-5克 + 枸杞5-10克，开水冲泡，保温杯反复饮用至下班，替代单纯白水。（感冒发热、实热证期间不宜）',
+      time: '10:00',
+      tip: '补气滋阴 · 辅助气虚型便秘',
+      tipClass: 'tip-purple'
+    },
+    {
+      id: 'mm2',
+      name: '起身活动 + 提肛运动',
+      detail: '避免久坐，走动5-10分钟，做扩胸、转腰、伸展运动。同时做提肛运动（收缩盆底肌3-5秒，放松2-6秒）。',
+      time: '10:00 - 10:15',
+      tip: '促进蠕动 · 改善久坐',
+      tipClass: 'tip-blue'
+    }
+  ],
+
+  // ── 3. 中午午餐 12:00-12:30 ──
+  noon: [
+    {
+      id: 'n1',
+      name: '丰盛午餐',
+      detail: '一拳头主食（糙米饭/藜麦饭）+ 一拳头蛋白（鱼肉/鸡胸肉/豆腐）+ 两拳头蔬菜（深绿色蔬菜+菌菇类）。可适当吃萝卜、洋葱等产气食物刺激蠕动。',
+      time: '12:00 - 12:30',
+      tip: '高纤维 + 优质蛋白 + 产气食物',
+      tipClass: 'tip-orange'
+    }
+  ],
+
+  // ── 4. 下午 15:00-15:15 ──
+  afternoon: [
+    {
+      id: 'a1',
+      name: '食用无糖黑芝麻糊',
+      detail: '冲泡一小包（约20g）作为午后加餐。富含油脂和膳食纤维，润滑肠道、软化粪便。',
+      time: '15:00',
+      tip: '润肠通便 · 饱腹感强',
+      tipClass: 'tip-green'
+    },
+    {
+      id: 'a2',
+      name: '同时补水 200ml',
+      detail: '与黑芝麻糊一起喝一杯水，持续补水维持肠道湿润。全天饮水量需达1500-2000ml。',
+      time: '15:00',
+      tip: '维持肠道湿润',
+      tipClass: 'tip-blue'
+    }
+  ],
+
+  // ── 5. 傍晚运动与晚餐 18:30-20:00 ──
+  evening: [
+    {
+      id: 'e1',
+      name: '有氧运动 30-60分钟',
+      detail: '快走/慢跑/游泳/太极拳/八段锦，中等强度，每周至少5次。',
+      time: '18:30 - 19:30',
+      tip: '每周至少5次',
+      tipClass: 'tip-blue'
+    },
+    {
+      id: 'e2',
+      name: '凯格尔运动',
+      detail: '收缩盆底肌（如忍小便动作）3-5秒，放松2-6秒，连续15-30分钟，每天3遍。',
+      time: '18:30 - 19:30',
+      tip: '改善盆底肌协调性',
+      tipClass: 'tip-purple'
+    },
+    {
+      id: 'e3',
+      name: '清淡晚餐',
+      detail: '以蔬菜、豆腐、少量鱼肉为主，主食量比午餐少。20:00后不再进食，尤其避免高脂高糖食物。',
+      time: '19:30 - 20:00',
+      tip: '清淡易消化 · 20:00后禁食',
+      tipClass: 'tip-orange'
+    }
+  ],
+
+  // ── 6. 夜间放松入眠 20:30-22:00 ──
+  night: [
+    {
+      id: 'ng1',
+      name: '"ILOV U" 腹部按摩 15分钟',
+      detail: '餐后2小时进行（约20:30）。从右下腹开始，按顺时针方向，模拟 I-L-U-O 字母顺序环形推拿腹部。',
+      time: '20:30 - 20:45',
+      tip: '餐后2小时做',
+      tipClass: 'tip-orange'
+    },
+    {
+      id: 'ng2',
+      name: '情志放松训练',
+      detail: '听舒缓音乐、深呼吸、冥想或瑜伽，释放一天的压力和焦虑。焦虑抑郁是便秘的重要诱因。',
+      time: '20:30 - 21:00',
+      tip: '调节脑-肠轴',
+      tipClass: 'tip-purple'
+    },
+    {
+      id: 'ng3',
+      name: '温水泡脚 20-30分钟',
+      detail: '水温39-42℃，同时按摩足底。促进全身放松，间接促进肠道功能。',
+      time: '21:00 - 21:30',
+      tip: '39-42℃水温',
+      tipClass: 'tip-orange'
+    },
+    {
+      id: 'ng4',
+      name: '睡前腹部按摩 5-10分钟',
+      detail: '再次进行顺时针腹部按摩，进一步刺激肠道，为次日排便创造良好条件。',
+      time: '21:30 - 21:40',
+      tip: '为次晨排便做准备',
+      tipClass: 'tip-green'
+    },
+    {
+      id: 'ng5',
+      name: '22:00 前入睡（睡足7-8小时）',
+      detail: '保持卧室安静、黑暗、凉爽。睡眠不足会干扰肠道神经系统，诱发或加重便秘。',
+      time: '22:00',
+      tip: '最关键 · 充足睡眠',
+      tipClass: 'tip-red'
+    }
+  ]
+};
+
+// ========== 每日名言 ==========
+const QUOTES = [
+  '「定时排便训练是解决便秘的根本方法，再忙也要留这10分钟。」',
+  '「养生的核心不在药，而在每一天的好习惯。」',
+  '「通便不是目的，恢复身体的自然节律才是。」',
+  '「纤维+水+运动，三管齐下，肠道自然通畅。」',
+  '「最好的医生是自己，最好的药物是时间与坚持。」',
+  '「习惯的力量，在于每一天的微小行动。」',
+  '「身体不会说谎，你对它好，它便回报你。」',
+];
+
+// ========== 存储 Key（v2 版本） ==========
+const STORAGE_KEY = 'constipation_checklist_v2';
+
+// ========== 工具函数 ==========
+function getToday() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getDateObj(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch { return {}; }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getTodayChecks() {
+  const data = loadData();
+  return data[getToday()] || {};
+}
+
+function saveCheck(taskId) {
+  const data = loadData();
+  const today = getToday();
+  if (!data[today]) data[today] = {};
+  data[today][taskId] = !data[today][taskId];
+  saveData(data);
+  return data[today][taskId];
+}
+
+// ========== 渲染任务列表 ==========
+function renderTasks(group, cardId) {
+  const card = document.getElementById(cardId);
+  const checks = getTodayChecks();
+  let html = '';
+  TASKS[group].forEach((task) => {
+    const isChecked = checks[task.id] ? true : false;
+    const completedClass = isChecked ? 'completed' : '';
+    const checkedClass = isChecked ? 'checked' : '';
+    html += `<div class="time-label">${task.time}</div>`;
+    html += `
+      <div class="task-item ${completedClass}" onclick="toggleTask('${task.id}', '${group}', this)">
+        <div class="checkbox-wrapper ${checkedClass}">
+          <div class="checkbox-visual"></div>
+        </div>
+        <div class="task-content">
+          <div class="task-name">${task.name}</div>
+          ${task.detail ? `<div class="task-detail">${task.detail}</div>` : ''}
+          <span class="task-tip ${task.tipClass}">${task.tip}</span>
+        </div>
+      </div>
+    `;
+  });
+  card.innerHTML = html;
+}
+
+// ========== 打卡切换 ==========
+function toggleTask(taskId, group, el) {
+  const isNowChecked = saveCheck(taskId);
+  const item = el.closest('.task-item');
+  const wrapper = el.querySelector('.checkbox-wrapper');
+
+  if (isNowChecked) {
+    item.classList.add('completed');
+    wrapper.classList.add('checked');
+    showToast('✅ 打卡成功！');
+  } else {
+    item.classList.remove('completed');
+    wrapper.classList.remove('checked');
+  }
+
+  updateStats();
+  updateSectionCount(group);
+
+  const allTasks = Object.values(TASKS).flat();
+  const checks = getTodayChecks();
+  const doneCount = allTasks.filter(t => checks[t.id]).length;
+  if (doneCount === allTasks.length) {
+    launchConfetti();
+    showToast('🎉 今日全部完成！太棒了！');
+  }
+}
+
+// ========== 更新统计 ==========
+function updateStats() {
+  const data = loadData();
+  const today = getToday();
+  const checks = data[today] || {};
+  const allTasks = Object.values(TASKS).flat();
+  const total = allTasks.length;
+  const done = allTasks.filter(t => checks[t.id]).length;
+  const pct = Math.round((done / total) * 100);
+
+  document.getElementById('todayProgress').textContent = pct + '%';
+  document.getElementById('todayDetail').textContent = `${done}/${total}`;
+  document.getElementById('progressText').textContent = pct + '%';
+
+  const circumference = 2 * Math.PI * 34;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('progressRing').style.strokeDashoffset = offset;
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // 连续打卡计算
+  let streak = 0;
+  let d = new Date();
+  const todayChecks = data[today];
+  const todayHasChecks = todayChecks && Object.values(todayChecks).some(v => v);
+
+  if (todayHasChecks) {
+    streak = 1;
+    d.setDate(d.getDate() - 1);
+    while (true) {
+      const key = d.toISOString().slice(0, 10);
+      const dayChecks = data[key];
+      if (dayChecks && Object.values(dayChecks).some(v => v)) {
+        streak++;
+        d.setDate(d.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+  }
+
+  document.getElementById('streakCount').textContent = streak;
+
+  const totalDays = Object.keys(data).filter(k => {
+    return data[k] && Object.values(data[k]).some(v => v);
+  }).length;
+  document.getElementById('totalDays').textContent = totalDays;
+
+  document.getElementById('streakFire').textContent = streak >= 7 ? '🔥' : streak >= 3 ? '⭐' : '🌱';
+}
+
+function updateSectionCount(group) {
+  const checks = getTodayChecks();
+  const tasks = TASKS[group];
+  const done = tasks.filter(t => checks[t.id]).length;
+  document.getElementById(`count-${group}`).textContent = `${done}/${tasks.length}`;
+
+  const card = document.getElementById(`card-${group}`);
+  if (done === tasks.length) {
+    card.classList.add('completed');
+  } else {
+    card.classList.remove('completed');
+  }
+}
+
+// ========== 周日历 ==========
+function renderWeekCalendar() {
+  const container = document.getElementById('streakDays');
+  const data = loadData();
+  const today = new Date();
+  const dayOfWeek = today.getDay() || 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - dayOfWeek + 1);
+
+  const weekDays = ['一', '二', '三', '四', '五', '六', '日'];
+  let html = '';
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const isToday = key === getToday();
+    const isFuture = d > today;
+    const dayChecks = data[key];
+    const isDone = dayChecks && Object.values(dayChecks).some(v => v);
+
+    let cls = 'streak-day';
+    if (isToday) cls += ' today';
+    else if (isDone) cls += ' done';
+    else if (isFuture) cls += ' future';
+
+    html += `
+      <div class="${cls}">
+        <span>周${weekDays[i]}</span>
+        <span class="day-num">${d.getDate()}</span>
+      </div>
+    `;
+  }
+  container.innerHTML = html;
+}
+
+// ========== 日期与阶段 ==========
+function renderDateAndPhase() {
+  const now = new Date();
+  const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+  document.getElementById('dateDisplay').textContent = now.toLocaleDateString('zh-CN', options);
+
+  const data = loadData();
+  const dates = Object.keys(data).sort();
+  const startDate = dates.length > 0 ? getDateObj(dates[0]) : now;
+  const diffDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+
+  let phase = '';
+  if (diffDays <= 14) phase = '📋 第一阶段：适应期（第 1-2 周）';
+  else if (diffDays <= 30) phase = '💪 第二阶段：巩固期（第 3-4 周）';
+  else if (diffDays <= 90) phase = '🎯 第三阶段：强化期（第 2-3 月）';
+  else phase = '🏆 长期维持：习惯已成自然';
+
+  document.getElementById('phaseBadge').textContent = phase;
+}
+
+// ========== 名言 ==========
+function renderQuote() {
+  const dayIndex = new Date().getDate() % QUOTES.length;
+  document.getElementById('dailyQuote').textContent = QUOTES[dayIndex];
+}
+
+// ========== Toast ==========
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ========== Confetti ==========
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#2d8a4e', '#ff8f00', '#7b1fa2', '#1565c0', '#e65100', '#4caf50'];
+  for (let i = 0; i < 50; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.top = '-10px';
+    el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width = (Math.random() * 8 + 5) + 'px';
+    el.style.height = (Math.random() * 8 + 5) + 'px';
+    el.style.animationDelay = (Math.random() * 0.8) + 's';
+    el.style.animationDuration = (Math.random() * 1 + 1) + 's';
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+}
+
+// ========== Reset ==========
+function resetToday() {
+  const data = loadData();
+  data[getToday()] = {};
+  saveData(data);
+  location.reload();
+}
+
+// ========== 排便记录 ==========
+const BOWEL_KEY = 'bowel_record_v1';
+let currentReviewYear = new Date().getFullYear();
+let currentReviewMonth = new Date().getMonth();
+
+function loadBowelData() {
+  try {
+    return JSON.parse(localStorage.getItem(BOWEL_KEY)) || {};
+  } catch { return {}; }
+}
+
+function saveBowelData(data) {
+  localStorage.setItem(BOWEL_KEY, JSON.stringify(data));
+}
+
+function getBowelStatus(dateStr) {
+  return loadBowelData()[dateStr];
+}
+
+function recordBowel(didGo) {
+  const data = loadBowelData();
+  const today = getToday();
+  data[today] = didGo;
+  saveBowelData(data);
+  renderBowelCard();
+  showToast(didGo ? '✅ 已记录：今日已排便' : '❌ 已记录：今日未排便');
+}
+
+function renderBowelCard() {
+  const today = getToday();
+  const status = getBowelStatus(today);
+  const yesBtn = document.getElementById('bowelYes');
+  const noBtn = document.getElementById('bowelNo');
+  const note = document.getElementById('bowelNote');
+
+  yesBtn.classList.remove('active');
+  noBtn.classList.remove('active');
+
+  if (status === true) {
+    yesBtn.classList.add('active');
+    note.textContent = '今日已记录：已排便 ✓';
+    note.style.color = 'var(--primary)';
+  } else if (status === false) {
+    noBtn.classList.add('active');
+    note.textContent = '今日已记录：未排便';
+    note.style.color = 'var(--danger)';
+  } else {
+    note.textContent = '点击上方按钮记录今日排便情况';
+    note.style.color = 'var(--text-muted)';
+  }
+}
+
+// ========== 月度回顾弹窗 ==========
+function openMonthReview() {
+  const now = new Date();
+  currentReviewYear = now.getFullYear();
+  currentReviewMonth = now.getMonth();
+  renderMonthCalendar(currentReviewYear, currentReviewMonth);
+  document.getElementById('monthModal').classList.add('show');
+}
+
+function closeMonthReview(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('monthModal').classList.remove('show');
+}
+
+function changeMonth(delta) {
+  currentReviewMonth += delta;
+  if (currentReviewMonth > 11) {
+    currentReviewMonth = 0;
+    currentReviewYear++;
+  } else if (currentReviewMonth < 0) {
+    currentReviewMonth = 11;
+    currentReviewYear--;
+  }
+  renderMonthCalendar(currentReviewYear, currentReviewMonth);
+}
+
+function renderMonthCalendar(year, month) {
+  const data = loadBowelData();
+  const grid = document.getElementById('monthGrid');
+  const title = document.getElementById('monthTitle');
+
+  title.textContent = `${year}年 ${month + 1}月`;
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  const startWeekday = firstDay.getDay();
+
+  // 补齐上月末尾
+  const prevLastDay = new Date(year, month, 0).getDate();
+  let html = '';
+  for (let i = startWeekday - 1; i >= 0; i--) {
+    const d = prevLastDay - i;
+    html += `<div class="month-day other-month"><span>${d}</span></div>`;
+  }
+
+  // 当月日期
+  const todayStr = getToday();
+  let yesCount = 0, noCount = 0, totalCount = 0;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const status = data[dateStr];
+    const isToday = dateStr === todayStr;
+
+    let cls = 'month-day';
+    if (isToday) cls += ' today';
+    if (status === true) { cls += ' bowel-yes'; yesCount++; totalCount++; }
+    else if (status === false) { cls += ' bowel-no'; noCount++; totalCount++; }
+
+    html += `<div class="${cls}"><span>${d}</span></div>`;
+  }
+
+  // 补齐下月开头
+  const endWeekday = lastDay.getDay();
+  const remaining = 6 - endWeekday;
+  for (let d = 1; d <= remaining; d++) {
+    html += `<div class="month-day other-month"><span>${d}</span></div>`;
+  }
+
+  grid.innerHTML = html;
+
+  // 统计
+  document.getElementById('statYes').textContent = yesCount;
+  document.getElementById('statNo').textContent = noCount;
+  document.getElementById('statTotal').textContent = totalCount;
+  const rate = totalCount > 0 ? Math.round((yesCount / totalCount) * 100) : 0;
+  document.getElementById('statRate').textContent = rate + '%';
+}
+
+// ========== Init ==========
+function init() {
+  renderDateAndPhase();
+  renderQuote();
+
+  Object.keys(TASKS).forEach(group => {
+    renderTasks(group, `card-${group}`);
+    updateSectionCount(group);
+  });
+
+  updateStats();
+  renderWeekCalendar();
+  renderBowelCard();
+}
+
+init();
+</script>
+</body>
+</html>
